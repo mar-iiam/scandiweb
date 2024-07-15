@@ -16,13 +16,35 @@ $product = new productScheme();
 $product->setName('mouse');
 $product->settype('electronic');
 $product->setprice('200');
-$product->setSKU('12sd');
+$product->setSKU('M12');
 $product->setspecific_attribute('hello');
 
 // Save the product to the database
-$userDAO->createProduct($product);
+//$userDAO->createProduct($product);
+$Reproduct=$userDAO->getProduct('M12');
+if ($product) {
+    echo "Product Details:\n";
+    echo "Name: " . $product->getName() . "\n";
+    echo "SKU: " . $product->getSKU() . "\n";
+    echo "Price: " . $product->getprice() . "\n";
+    echo "Specific Attribute: " . $product->getspecific_attribute() . "\n";
+    echo "Type: " . $product->gettype() . "\n";
+} else {
+    echo "Product not found.\n";
+}
+echo "--------------------------------------------------------------";
+$Allproducts=$userDAO->getAllProducts();
+foreach ($Allproducts as $product) {
+    echo "Product Details:\n";
+    echo "Name: " . $product->getName() . "\n";
+    echo "SKU: " . $product->getSKU() . "\n";
+    echo "Price: " . $product->getprice() . "\n";
+    echo "Specific Attribute: " . $product->getspecific_attribute() . "\n";
+    echo "Type: " . $product->gettype() . "\n";
+    echo "----------------------\n";
+}
 
-// Retrieve the product from the database
+$userDAO->deleteProduct('12sd');
 
 
 

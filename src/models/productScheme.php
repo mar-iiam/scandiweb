@@ -1,5 +1,6 @@
 <?php
 namespace App\models;
+
 class productScheme {
     private $id;
     private $SKU;

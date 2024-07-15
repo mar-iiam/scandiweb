@@ -1,6 +1,8 @@
 <?php
 namespace App\dbControllers;
 use App\models\productScheme;
+use PDO;
+use Exception;
 class productModelController {
     private $db;
 
@@ -10,7 +12,9 @@ class productModelController {
 
     public function createProduct(productScheme $product) {
         $stmt = $this->db->getPdo()->prepare("INSERT INTO products (name, SKU, price, specific_attribute, type) VALUES (:name, :sku, :price, :specific_attribute, :type)");
-    
+        if ($this->checkSKU($product->getSKU())) {
+            throw new Exception("SKU already exists in the database.");
+        }
         // Check for successful execution
         if ($stmt->execute([
             ':name' => $product->getName(),
@@ -26,33 +30,58 @@ class productModelController {
         }
     }
 
-    public function getUser($id) {
-        $stmt = $this->db->getPdo()->prepare("SELECT * FROM users WHERE id = :id");
-        $stmt->execute([':id' => $id]);
+    private function checkSKU($SKU) {
+        $stmt = $this->db->getPdo()->prepare("SELECT 1 FROM products WHERE SKU = :SKU LIMIT 1;");
+        $stmt->bindParam(':SKU', $SKU, PDO::PARAM_STR);
+        $stmt->execute();
+    
+        // Fetch the result
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+        // Return true if SKU exists, false otherwise
+        return $result !== false;
+    }
+    
+    public function getProduct($sku) {
+        $stmt = $this->db->getPdo()->prepare("SELECT * FROM products WHERE SKU = :sku");
+        $stmt->execute([':sku' => $sku]);  // Corrected to match the placeholder
+
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+
         if ($row) {
-            $user = new User();
-            $user->setId($row['id']);
-            $user->setName($row['name']);
-            $user->setEmail($row['email']);
-            return $user;
+            $product = new productScheme();
+            $product->setSKU($row['SKU']);
+            $product->setName($row['name']);
+            $product->setPrice($row['price']);
+            $product->setType($row['type']);
+            $product->setSpecific_attribute($row['specific_attribute']);
+
+            return $product;
         } else {
             return null;
         }
     }
+   public function getAllProducts(){
+    $stmt = $this->db->getPdo()->query("SELECT * FROM products");
 
-    public function updateUser(User $user) {
-        $stmt = $this->db->getPdo()->prepare("UPDATE users SET name = :name, email = :email WHERE id = :id");
-        $stmt->execute([
-            ':name' => $user->getName(),
-            ':email' => $user->getEmail(),
-            ':id' => $user->getId()
-        ]);
+    $products = [];
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $product = new productScheme();
+        $product->setSKU($row['SKU']);
+        $product->setName($row['name']);
+        $product->setprice($row['price']);
+        $product->settype($row['type']);
+        $product->setspecific_attribute($row['specific_attribute']);
+
+        $products[] = $product;
     }
 
-    public function deleteUser($id) {
-        $stmt = $this->db->getPdo()->prepare("DELETE FROM users WHERE id = :id");
-        $stmt->execute([':id' => $id]);
+    return $products;
+   }
+
+
+    public function deleteProduct($sku) {
+        $stmt = $this->db->getPdo()->prepare("DELETE FROM products WHERE SKU = :sku");
+        $stmt->execute([':sku' => $sku]);
     }
 }

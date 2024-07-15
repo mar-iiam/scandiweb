@@ -1,0 +1,15 @@
+doctrine:
+    dbal:
+        default_connection: default
+        connections:
+            default:
+                driver: 'pdo_mysql'
+                host: '127.0.0.1'
+                port: 3306 # Default MySQL port
+                dbname: 'ProductTask'
+                user: 'root'
+                password: ''
+                charset: utf8mb4
+    orm:
+        auto_generate_proxy_classes: true # Optional, enable proxy classes for lazy loading
+        auto_mapping: true # Optional, enable auto-mapping from entity annotations

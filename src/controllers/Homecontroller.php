@@ -5,6 +5,7 @@ require '../../vendor/autoload.php';
 use config\database;
 use App\dbControllers\productModelController;
 use App\models\productScheme;
+use App\dbControllers\dbMangement;
 // Create a new database connection
 $db = new Database();
 
@@ -44,7 +45,5 @@ foreach ($Allproducts as $product) {
     echo "----------------------\n";
 }
 
-$userDAO->deleteProduct('12sd');
-
-
+//$userDAO->deleteProduct('12sd');
 

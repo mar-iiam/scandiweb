@@ -1,6 +1,6 @@
 <?php
 namespace App\Controllers;
-use config\database;
+use config\MysqlDatabase;
 use App\dbControllers\productModelController;
 use App\models\productScheme;
 use Exception;
@@ -26,7 +26,7 @@ class ProductMagement
         $product->setspecific_attribute($specificAttribute);
 
         // Initialize Database and DAO
-        $db = new Database();
+        $db = new MysqlDatabase();
         $userDAO = new ProductModelController($db);
         try {
             if ($userDAO->checkSKU($product->getSKU())) {
@@ -47,7 +47,7 @@ class ProductMagement
     }
 
     public function getProducts(){
-        $db = new Database();
+        $db = new MysqlDatabase();
         $userDAO = new productModelController($db);
         $Allproducts=$userDAO->getAllProducts();
         if($Allproducts){
@@ -68,7 +68,7 @@ class ProductMagement
         
     }
     public function getSpecificProduct(){
-        $db = new Database();
+        $db = new MysqlDatabase();
         $userDAO = new productModelController($db);
         $Reproduct=$userDAO->getProduct('M12');
         if ($Reproduct) {
@@ -87,7 +87,7 @@ class ProductMagement
         // Retrieve SKU from route variables
 
         // Initialize Database and DAO
-        $db = new Database();
+        $db = new MysqlDatabase();
         $productDAO = new ProductModelController($db);
 
         // Call DAO method to delete product

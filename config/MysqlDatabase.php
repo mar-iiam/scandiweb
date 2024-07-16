@@ -5,17 +5,15 @@ namespace config;
 // Use the correct PDO namespace
 use PDO;
 
-class Database {
-    private $pdo;
+class MysqlDatabase extends dataBaseConnection{
+    protected $pdo;
 
     public function __construct(string $host = '127.0.0.1', string $dbname = 'ProductTask', string $user = 'root', string $password = '') {
-        $dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
-        $this->pdo = new PDO($dsn, $user, $password);
-        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // Corrected line
+        parent::__construct($host, $dbname, $user, $password);
     }
 
-    public function getPdo(): PDO {
-        return $this->pdo;
+    protected function getDsn(string $host, string $dbname): string {
+        return "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
     }
 }
 

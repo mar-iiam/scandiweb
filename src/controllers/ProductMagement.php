@@ -6,20 +6,36 @@ use App\models\productScheme;
 
 class ProductMagement
 {
-    
-    public function Add_product()
-    {
+    public function Add_product() {
+        // Handle POST request data
+        $postData = json_decode(file_get_contents('php://input'), true);
+
+        // Validate and sanitize data as needed
+        $name = htmlspecialchars($postData['name'] ?? '');
+        $type = htmlspecialchars($postData['type'] ?? '');
+        $price = htmlspecialchars($postData['price'] ?? '');
+        $sku = htmlspecialchars($postData['sku'] ?? '');
+        $specificAttribute = htmlspecialchars($postData['specific_attribute'] ?? '');
+
+        // Create ProductScheme object
+        $product = new ProductScheme();
+        $product->setName($name);
+        $product->settype($type);
+        $product->setprice($price);
+        $product->setSKU($sku);
+        $product->setspecific_attribute($specificAttribute);
+
+        // Initialize Database and DAO
         $db = new Database();
-        $userDAO = new productModelController($db);
-        $product = new productScheme();
-        $product->setName('Eva Serum');
-        $product->settype('Skin care');
-        $product->setprice('200');
-        $product->setSKU('ER33');
-        $product->setspecific_attribute('20g');
+        $userDAO = new ProductModelController($db);
+
+        // Call DAO method to create product
         $userDAO->createProduct($product);
-        echo 'Product added successfuly';
+
+        // Return success message or handle errors accordingly
+        echo 'Product added successfully';
     }
+
     public function getProducts(){
         $db = new Database();
         $userDAO = new productModelController($db);
@@ -51,9 +67,17 @@ class ProductMagement
         }
     }
 
-    public function delete_product(){
+    public function delete_product($sku) {
+        // Retrieve SKU from route variables
+
+        // Initialize Database and DAO
         $db = new Database();
-        $userDAO = new productModelController($db);
-        $userDAO->deleteProduct('M12');
+        $productDAO = new ProductModelController($db);
+
+        // Call DAO method to delete product
+        $productDAO->deleteProduct($sku);
+
+        // Return success message or handle errors accordingly
+        echo "Product  deleted successfully";
     }
 }

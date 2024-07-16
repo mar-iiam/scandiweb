@@ -6,10 +6,9 @@ use FastRoute\RouteCollector;
 use function FastRoute\simpleDispatcher;
 
 $dispatcher = simpleDispatcher(function(RouteCollector $r) {
-    $r->addRoute('GET', '/', ['App\controllers\ProductMagement', 'Add_product']);
+    $r->addRoute('POST', '/', ['App\controllers\ProductMagement', 'Add_product']);
     $r->addRoute('GET', '/get_products', ['App\controllers\ProductMagement', 'getProducts']);     
-    $r->addRoute('GET', '/product', ['App\controllers\ProductMagement', 'getSpecificProduct']);
-    $r->addRoute('GET', '/delete_product', ['App\controllers\ProductMagement', 'delete_product']);
+    $r->addRoute('DELETE', '/delete_product/{sku}', ['App\controllers\ProductMagement', 'delete_product']); // Corrected here
 });
 
 $httpMethod = $_SERVER['REQUEST_METHOD'];

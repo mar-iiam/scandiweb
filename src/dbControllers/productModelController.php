@@ -12,9 +12,7 @@ class productModelController {
 
     public function createProduct(productScheme $product) {
         $stmt = $this->db->getPdo()->prepare("INSERT INTO products (name, SKU, price, specific_attribute, type) VALUES (:name, :sku, :price, :specific_attribute, :type)");
-        if ($this->checkSKU($product->getSKU())) {
-            throw new Exception("SKU already exists in the database.");
-        }
+        
         // Check for successful execution
         if ($stmt->execute([
             ':name' => $product->getName(),
@@ -30,7 +28,7 @@ class productModelController {
         }
     }
 
-    private function checkSKU($SKU) {
+    public function checkSKU($SKU) {
         $stmt = $this->db->getPdo()->prepare("SELECT 1 FROM products WHERE SKU = :SKU LIMIT 1;");
         $stmt->bindParam(':SKU', $SKU, PDO::PARAM_STR);
         $stmt->execute();

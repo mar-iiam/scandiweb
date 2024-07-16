@@ -3,7 +3,7 @@ namespace App\Controllers;
 use config\database;
 use App\dbControllers\productModelController;
 use App\models\productScheme;
-
+use Exception;
 class ProductMagement
 {
     public function Add_product() {
@@ -28,27 +28,43 @@ class ProductMagement
         // Initialize Database and DAO
         $db = new Database();
         $userDAO = new ProductModelController($db);
-
-        // Call DAO method to create product
-        $userDAO->createProduct($product);
-
-        // Return success message or handle errors accordingly
-        echo 'Product added successfully';
+        try {
+            if ($userDAO->checkSKU($product->getSKU())) {
+                http_response_code(406); 
+                echo json_encode(["status" => "faild", "message" => "SKU already exists."]);
+                return;
+            }
+            http_response_code(200); 
+            $userDAO->createProduct($product);
+            echo json_encode(["status" => "success", "message" => "Product added successfully."]);
+        } catch (Exception $e) {
+           
+            // Set appropriate HTTP status code (e.g., 400 for bad request, 500 for internal server error)
+            http_response_code(500); 
+            // Send error message as JSON response
+            
+        }
     }
 
     public function getProducts(){
         $db = new Database();
         $userDAO = new productModelController($db);
         $Allproducts=$userDAO->getAllProducts();
-        foreach ($Allproducts as $product) {
-            echo "Product Details:\n";
-            echo "Name: " . $product->getName() . "\n";
-            echo "SKU: " . $product->getSKU() . "\n";
-            echo "Price: " . $product->getprice() . "\n";
-            echo "Specific Attribute: " . $product->getspecific_attribute() . "\n";
-            echo "Type: " . $product->gettype() . "\n";
-            echo "----------------------\n";
+        if($Allproducts){
+            foreach ($Allproducts as $product) {
+                echo json_encode(["Name" => $product->getName(),
+                 "SKU" => $product->getSKU(),
+                 "Price" => $product->getprice(),
+                 "Price" => $product->getprice(),
+                 "Specific_Attribute" => $product->getspecific_attribute(),
+                 "type"=> $product->gettype()
+                ]);
+                
+            }
+        }else {
+            echo "No products found ";
         }
+     
         
     }
     public function getSpecificProduct(){

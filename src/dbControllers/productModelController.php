@@ -10,76 +10,66 @@ class productModelController {
         $this->db = $db;
     }
 
-    public function createProduct(productScheme $product) {
-        $stmt = $this->db->getPdo()->prepare("INSERT INTO products (name, SKU, price, specific_attribute, type) VALUES (:name, :sku, :price, :specific_attribute, :type)");
-        
-        // Check for successful execution
-        if ($stmt->execute([
+    public function createProduct(ProductScheme $product): void {
+        $query = "
+            INSERT INTO products (name, SKU, price, specific_attribute, type)
+            VALUES (:name, :sku, :price, :specific_attribute, :type)
+        ";
+        $stmt = $this->db->getPdo()->prepare($query);
+
+        $params = [
             ':name' => $product->getName(),
             ':sku' => $product->getSKU(),
-            ':price' => $product->getPrice(),
+            ':price' => $product->getprice(),
             ':specific_attribute' => $product->getspecific_attribute(),
-            ':type' => $product->getType(),
-        ])) {
-            $product->setId($this->db->getPdo()->lastInsertId());
-        } else {
-            // Handle error (e.g., throw exception or log error)
+            ':type' => $product->gettype(),
+        ];
+
+        if (!$stmt->execute($params)) {
             throw new Exception("Error inserting product into database.");
         }
+
+        $product->setId($this->db->getPdo()->lastInsertId());
     }
 
-    public function checkSKU($SKU) {
-        $stmt = $this->db->getPdo()->prepare("SELECT 1 FROM products WHERE SKU = :SKU LIMIT 1;");
-        $stmt->bindParam(':SKU', $SKU, PDO::PARAM_STR);
+    public function checkSKU(string $SKU): bool {
+        $query = "SELECT 1 FROM products WHERE SKU = :sku LIMIT 1";
+        $stmt = $this->db->getPdo()->prepare($query);
+        $stmt->bindParam(':sku', $SKU, PDO::PARAM_STR);
         $stmt->execute();
-    
-        // Fetch the result
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-        // Return true if SKU exists, false otherwise
-        return $result !== false;
+
+        return $stmt->fetch(PDO::FETCH_ASSOC) !== false;
     }
     
-    public function getProduct($sku) {
-        $stmt = $this->db->getPdo()->prepare("SELECT * FROM products WHERE SKU = :sku");
-        $stmt->execute([':sku' => $sku]);  // Corrected to match the placeholder
 
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    public function getAllProducts(): array {
+        $query = "SELECT * FROM products";
+        $stmt = $this->db->getPdo()->query($query);
 
-        if ($row) {
-            $product = new productScheme();
-            $product->setSKU($row['SKU']);
-            $product->setName($row['name']);
-            $product->setPrice($row['price']);
-            $product->setType($row['type']);
-            $product->setSpecific_attribute($row['specific_attribute']);
-
-            return $product;
-        } else {
-            return null;
+        $products = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $products[] = $this->mapRowToProduct($row);
         }
-    }
-   public function getAllProducts(){
-    $stmt = $this->db->getPdo()->query("SELECT * FROM products");
 
-    $products = [];
-    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        $product = new productScheme();
+        return $products;
+    }
+
+     
+    private function mapRowToProduct(array $row): ProductScheme {
+        $product = new ProductScheme();
+        $product->setId($row['id']);
         $product->setSKU($row['SKU']);
         $product->setName($row['name']);
         $product->setprice($row['price']);
         $product->settype($row['type']);
         $product->setspecific_attribute($row['specific_attribute']);
 
-        $products[] = $product;
+        return $product;
     }
 
-    return $products;
-   }
-
-
-    public function deleteProduct($sku) {
-        $stmt = $this->db->getPdo()->prepare("DELETE FROM products WHERE SKU = :sku");
+    public function deleteProduct(string $sku): void {
+        $query = "DELETE FROM products WHERE SKU = :sku";
+        $stmt = $this->db->getPdo()->prepare($query);
         $stmt->execute([':sku' => $sku]);
     }
 }

@@ -1,6 +1,7 @@
 <?php
 namespace config;
 use PDO;
+
 abstract class dataBaseConnection {
     protected $pdo;
 

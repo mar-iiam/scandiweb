@@ -67,7 +67,7 @@ class productModelController {
         return $product;
     }
 
-    public function deleteProduct(string $sku): void {
+    public function  deleteOneProduct(string $sku): void {
         $query = "DELETE FROM products WHERE SKU = :sku";
         $stmt = $this->db->getPdo()->prepare($query);
         $stmt->execute([':sku' => $sku]);

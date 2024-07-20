@@ -4,11 +4,20 @@ require '../vendor/autoload.php';
 
 use FastRoute\RouteCollector;
 use function FastRoute\simpleDispatcher;
+ 
+header('Access-Control-Allow-Origin: *'); // Or specify your frontend origin
+header('Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS'); 
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(204); // No content
+    exit();
+}
 
 $dispatcher = simpleDispatcher(function(RouteCollector $r) {
     $r->addRoute('POST', '/', ['App\controllers\ProductManagement', 'addProduct']);
     $r->addRoute('GET', '/get_products', ['App\controllers\ProductManagement', 'getProducts']);     
-    $r->addRoute('DELETE', '/delete_product/{sku}', ['App\controllers\ProductManagement', 'deleteProduct']); // Corrected here
+    $r->addRoute('DELETE', '/delete_product', ['App\controllers\ProductManagement', 'deleteProduct']); // Corrected here
 });
 
 $httpMethod = $_SERVER['REQUEST_METHOD'];

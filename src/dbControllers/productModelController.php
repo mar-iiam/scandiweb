@@ -3,12 +3,8 @@ namespace App\dbControllers;
 use App\models\productScheme;
 use PDO;
 use Exception;
-class productModelController {
-    private $db;
-
-    public function __construct($db) {
-        $this->db = $db;
-    }
+class productModelController extends BaseModelController {
+ 
 
     public function createProduct(ProductScheme $product): void {
         $query = "
@@ -21,7 +17,7 @@ class productModelController {
             ':name' => $product->getName(),
             ':sku' => $product->getSKU(),
             ':price' => $product->getprice(),
-            ':specific_attribute' => $product->getspecific_attribute(),
+            ':specific_attribute' => $product->getSpecificAttribute(),
             ':type' => $product->gettype(),
         ];
 
@@ -55,14 +51,14 @@ class productModelController {
     }
 
      
-    private function mapRowToProduct(array $row): ProductScheme {
+    protected function mapRowToProduct(array $row): ProductScheme {
         $product = new ProductScheme();
         $product->setId($row['id']);
         $product->setSKU($row['SKU']);
         $product->setName($row['name']);
         $product->setprice($row['price']);
         $product->settype($row['type']);
-        $product->setspecific_attribute($row['specific_attribute']);
+        $product->setSpecificAttribute($row['specific_attribute']);
 
         return $product;
     }

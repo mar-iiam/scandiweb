@@ -31,7 +31,7 @@ class ProductManagement extends AbstractProductManagement{
         $product->setType($type);
         $product->setPrice($price);
         $product->setSKU($sku);
-        $product->setspecific_attribute($specificAttribute);
+        $product->setSpecificAttribute($specificAttribute);
 
         try {
             if ($this->productDAO->checkSKU($product->getSKU())) {
@@ -61,7 +61,7 @@ class ProductManagement extends AbstractProductManagement{
                     "Name" => $product->getName(),
                     "SKU" => $product->getSKU(),
                     "Price" => $product->getPrice(),
-                    "Specific_Attribute" => $product->getspecific_attribute(),
+                    "Specific_Attribute" => $product->getSpecificAttribute(),
                     "Type" => $product->getType()
                 ];
             }
